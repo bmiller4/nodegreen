@@ -6,18 +6,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var posts = require('./routes/posts');
+var projects = require('./routes/projects');
 var http = require('http');
 var fs = require('fs');
 var app = express();
-var Config = require('./cfg'),
-	conf = new Config();
+var Config = require('./cfg');
 
 
 app.use('/', routes);
-app.use('/users', users);
 app.use('/posts', posts);
+app.use('/projects', projects);
 
 // view engine setup
 app.set('port', process.env.PORT || 3000);
@@ -60,23 +59,8 @@ if (app.get('NODE_ENV') === 'development') {
     });
 }
 
-mongoose.connect('mongodb://localhost:27017/NODEGREEN_DB', function (error) {
-	if(mongoose.connection.readyState) {
-	  console.log("Connnection to NODEGREEN_DB Successful~!");
-	}
-});
+mongoose.connect('mongodb://localhost:27017/blogdb')
 
-app.use('/users', function(req, res){
-    mongoose.model('users').find(function(err, users) {
-        res.send(users);
-    });
-});
-
-app.use('/posts', function(req, res){
-    mongoose.model('posts').find(function(err, posts) {
-        res.send(posts);
-    });
-});
 
 // production error handler
 // no stacktraces leaked to user
@@ -88,15 +72,10 @@ app.use(function(err, req, res, next) {
     });
 });
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
 
-/*
-app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
 });
-*/
+
 
 module.exports = app;
